@@ -44,7 +44,7 @@ def search_tweets(search_word, key_flag):
     print("finding the file {}...".format(path))
     if check_file.exists():
         print("File exist, write after the last line.")
-        temp_id = re.search(r'/\*(.*?)\*(.*?)\*/', str(find_last_line(path)))
+        temp_id = re.search(r'\|(.*?)\|(.*?)\|', str(find_last_line(path)))
         #  print("..", temp_id.group(2))
         if temp_id:
             last_num = int(temp_id.group(1)) + 1
@@ -59,8 +59,9 @@ def search_tweets(search_word, key_flag):
     for search_status in tweepy.Cursor(api2.search, q=search_word,
                                        #  result_type='recent',
                                        tweet_mode='extended',
+                                       lang='en',
                                        max_id=str(int(last_id) - 1),
-                                       count=20).pages(1):
+                                       count=100).pages(10000000000):
         #  print("Get tweets successfully ... \n\n")
         print(search_status)
 
@@ -70,7 +71,7 @@ def search_tweets(search_word, key_flag):
                 if re.match(r'^RT', s_temp_text):
                     RT_counter += 1
                 else:
-                    file_text.write("/*{2}*{1}*/{0}\n".format(
+                    file_text.write("|{2}|{1}|{0}\n".format(
                         s_temp_text,
                         search_status[i].id,
                         tweet_number + 1))
@@ -111,6 +112,6 @@ def search_tweets(search_word, key_flag):
 if __name__ == '__main__':
     key_flag = 0  # =1 When the key_list is 4 lines or it is a wrong key.
     # search test
-    q = "Donald Trump"
+    q = "#sarcasm OR #irony"
     #  q = "#皮肉"
     search_tweets(q, key_flag)
